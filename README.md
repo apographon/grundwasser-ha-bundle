@@ -46,30 +46,8 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 - Data rows: `YYYY-MM-DD;value;status` (value with comma as decimal, e.g. `511,22`).
 - Rows with empty value are skipped (measurement gaps).
 
-## Upload to GitHub
-
-This folder is a self-contained bundle. To publish it as a repo:
-
-1. **Create a new repository** on GitHub (e.g. `grundwasser-ha-bundle`). Do not add a README or .gitignore there (this bundle already has them).
-
-2. **From your machine**, in the folder that contains this bundle (e.g. `HAss`), run:
-
-   ```bash
-   cd grundwasser-bundle
-   git init
-   git add .
-   git commit -m "Initial bundle: Grundwasser Poing D83 data feed, import script, UI cards"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-   git push -u origin main
-   ```
-
-   Replace `YOUR_USERNAME` and `YOUR_REPO_NAME` with your GitHub user and repo name. If you use SSH: `git@github.com:YOUR_USERNAME/YOUR_REPO_NAME.git`.
-
-3. If GitHub asks for authentication, use a [Personal Access Token](https://github.com/settings/tokens) (HTTPS) or ensure SSH keys are set up (SSH).
-
-The CSV file is not included (too large, user-specific). Document in the repo that users obtain it from NID Bayern.
-
 ## License
+
+MIT. Data source: Bayerisches Landesamt für Umwelt (LfU), [gkd.bayern.de](https://www.gkd.bayern.de).
 
 MIT. Data source: Bayerisches Landesamt für Umwelt (LfU), [gkd.bayern.de](https://www.gkd.bayern.de).
