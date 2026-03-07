@@ -15,13 +15,29 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 | `ui/apex-grundwasser-card.yaml` | ApexCharts card: year comparison (Jan–Dec, multiple years) |
 | `ui/tile-grundwasser-situation.yaml` | Tile card: situation with color (green/amber/red) |
 | [docs/csv-import.md](docs/csv-import.md) | Import instructions and troubleshooting |
+| `ui/Home-Assistant-Grundwasser-Visual.png` | Screenshot of the dashboard (sample) |
+
+## Visualization (sample)
+
+The chart and situation tile together give a year-over-year view and current status:
+
+![Grundwasser Poing D83 dashboard sample](ui/Home-Assistant-Grundwasser-Visual.png)
 
 ## Requirements
 
 - Home Assistant with **REST** and **Recorder** (SQLite)
-- **apexcharts-card** (HACS) for the chart
-- **card-mod** (HACS) for the situation tile colors
 - **Python 3.8+** for the import script (when running outside HA)
+
+### HACS add-ons (required for the dashboard cards)
+
+Install these via [HACS](https://hacs.xyz/) (Home Assistant Community Store):
+
+| Add-on | Purpose |
+|--------|---------|
+| **apexcharts-card** | Year comparison chart (ApexCharts) |
+| **card-mod** | Situation tile with state-based colors |
+
+After installing, add the frontend resources in **Settings → Dashboards → Resources** (or as prompted by HACS), then reload the dashboard.
 
 ## Quick setup
 
