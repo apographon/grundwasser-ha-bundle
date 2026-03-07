@@ -11,9 +11,9 @@ span:
   start: year
 all_series_config:
   type: line
-  opacity: 0.2
+  opacity: 0.5
   stroke_width: 1
-  color: "#bdbdbd"
+  stroke_dash: 4
 apex_config:
   chart:
     height: 320
@@ -32,30 +32,39 @@ series:
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2018"
     offset: -2920d
+    color: "#5ba3d0"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2019"
     offset: -2555d
+    color: "#6bb86b"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2020"
     offset: -2190d
+    color: "#b87bc4"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2021"
     offset: -1825d
+    color: "#d9945c"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2022"
     offset: -1460d
+    color: "#5ba8ad"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2023"
     offset: -1095d
+    color: "#b8a85c"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2024"
     offset: -730d
+    color: "#c97a9a"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2025"
     offset: -365d
+    color: "#7a85b8"
   - entity: sensor.grundwasser_poing_d83_m_u_nn
     name: "2026"
     opacity: 1
-    stroke_width: 3
+    stroke_width: 5
+    stroke_dash: 0
     color: "#ff9800"
     extend_to: false
