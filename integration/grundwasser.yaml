@@ -1,4 +1,5 @@
 # REST integration: Grundwasser Poing D 83 (NID Bayern)
+# Local setup for this station. For another city/region, change the resource URL and unique_id/names to match your NID station.
 # Add to config via configuration.yaml: rest: !include_dir_merge_named integrations/
 # or copy into config/integrations/ and include that folder.
 rest:

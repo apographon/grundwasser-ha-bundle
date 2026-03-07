@@ -1,23 +1,45 @@
 # Grundwasser CSV → Recorder Import
 
-Import historical data from `grundwasser_poing_historie.csv` into the Home Assistant recorder.
+Import historical data from `grundwasser_poing_historie.csv` into the Home Assistant recorder. This setup targets the **Poing D 83** station; for another station, use the same script but set the script’s `ENTITY_ID` and CSV path to match your sensor and CSV file.
 
 ## Prerequisites
 
-- Home Assistant with SQLite recorder; entity `sensor.grundwasser_poing_d83_m_u_nn` (from the REST integration)
-- Python 3.8+
+- Home Assistant with **SQLite** recorder (default)
+- The level entity must already exist (from the REST integration), e.g. `sensor.grundwasser_poing_d83_m_u_nn`
+- **Python 3.8+** (on the HA host, e.g. via SSH add-on, or on another machine if you copy the DB and CSV there)
+- CSV file: same format as NID Bayern export (`Datum;Grundwasserstand [m ü. NN];Prüfstatus`, data from line 9)
+
+## Where to put files
+
+- **Script:** Copy `scripts/import-grundwasser-csv-to-recorder.py` from this bundle to your HA host, e.g. `/config/`.
+- **CSV:** Place the CSV where you can pass its path to the script. Typical: `config/www/grundwasser_poing_historie.csv` so the path is `www/grundwasser_poing_historie.csv` when running from `/config`.
+- **DB:** The script writes to `home-assistant_v2.db` (usually in `/config/` on HA OS).
 
 ## Steps
 
-1. **Stop Home Assistant:** `ha core stop`
-2. **Backup DB:** `cp /config/home-assistant_v2.db /config/home-assistant_v2.db.bak`
-3. **Run import:**
+1. **Stop Home Assistant** (required so the DB is not locked):
+   ```bash
+   ha core stop
+   ```
+2. **Backup the database:**
+   ```bash
+   cp /config/home-assistant_v2.db /config/home-assistant_v2.db.bak
+   ```
+3. **Run a dry run** (parse CSV only, no write) to verify:
    ```bash
    cd /config
+   python3 import-grundwasser-csv-to-recorder.py www/grundwasser_poing_historie.csv home-assistant_v2.db --dry-run
+   ```
+   You should see a line like “Parsed N rows” and “would import N states”.
+4. **Run the import:**
+   ```bash
    python3 import-grundwasser-csv-to-recorder.py www/grundwasser_poing_historie.csv home-assistant_v2.db
    ```
-   Use `--force` if the entity already has data and you want to backfill. Use `--dry-run` to test.
-4. **Start Home Assistant:** `ha core start`
+   If the entity already has newer data and you want to backfill history, add `--force`.
+5. **Start Home Assistant:**
+   ```bash
+   ha core start
+   ```
 
 ## Options
 
