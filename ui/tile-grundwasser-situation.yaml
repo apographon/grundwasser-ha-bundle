@@ -1,0 +1,36 @@
+# Tile: Grundwasser Situation with state-based colors. Requires card-mod (HACS).
+# Adjust entity if your situation sensor has another ID (e.g. sensor.grundwasser_poing_d83_situation).
+# States: kein Niedrigwasser → green, niedrig → amber, Niedrigwasser → red.
+---
+type: tile
+entity: sensor.grundwasser_poing_d83_situation_3
+grid_options:
+  columns: 12
+  rows: 1
+icon: mdi:water
+card_mod:
+  style:
+    ha-card: |
+      {% set s = states('sensor.grundwasser_poing_d83_situation_3') %}
+      {% if s == 'kein Niedrigwasser' %}
+      --tile-color: #4caf50 !important;
+      {% elif s == 'niedrig' %}
+      --tile-color: #ff9800 !important;
+      {% elif s == 'Niedrigwasser' %}
+      --tile-color: #f44336 !important;
+      {% else %}
+      --tile-color: var(--secondary-text-color) !important;
+      {% endif %}
+    .icon-container .icon$: |
+      .shape {
+        {% set s = states('sensor.grundwasser_poing_d83_situation_3') %}
+        {% if s == 'kein Niedrigwasser' %}
+        background: #4caf50 !important;
+        {% elif s == 'niedrig' %}
+        background: #ff9800 !important;
+        {% elif s == 'Niedrigwasser' %}
+        background: #f44336 !important;
+        {% else %}
+        background: var(--secondary-text-color) !important;
+        {% endif %}
+      }

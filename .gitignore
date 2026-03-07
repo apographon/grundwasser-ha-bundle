@@ -1,0 +1,6 @@
+# Optional: add CSV here if you don't want to commit the large file
+# grundwasser_poing_historie.csv
+*.db
+*.db.bak
+__pycache__/
+.DS_Store

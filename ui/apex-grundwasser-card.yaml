@@ -1,0 +1,61 @@
+# ApexCharts: Grundwasser Poing D83 – Jahresvergleich (Jan 1 – Dec 31)
+# Paste into Lovelace: Edit Card → Raw configuration. Requires apexcharts-card (HACS).
+---
+type: custom:apexcharts-card
+update_interval: 1min
+header:
+  show: true
+  title: Grundwasser Poing D83 – Jahresvergleich
+graph_span: 365d
+span:
+  start: year
+all_series_config:
+  type: line
+  opacity: 0.2
+  stroke_width: 1
+  color: "#bdbdbd"
+apex_config:
+  chart:
+    height: 320
+  stroke:
+    width: 2
+  dataLabels:
+    enabled: false
+  xaxis:
+    title:
+      text: Tag im Jahr
+  yaxis:
+    decimalsInFloat: 2
+    title:
+      text: Grundwasserstand (m ü. NN)
+series:
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2018"
+    offset: -2920d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2019"
+    offset: -2555d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2020"
+    offset: -2190d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2021"
+    offset: -1825d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2022"
+    offset: -1460d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2023"
+    offset: -1095d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2024"
+    offset: -730d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2025"
+    offset: -365d
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: "2026"
+    opacity: 1
+    stroke_width: 3
+    color: "#ff9800"
+    extend_to: false

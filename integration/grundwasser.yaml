@@ -1,0 +1,33 @@
+# REST integration: Grundwasser Poing D 83 (NID Bayern)
+# Add to config via configuration.yaml: rest: !include_dir_merge_named integrations/
+# or copy into config/integrations/ and include that folder.
+rest:
+  - resource: "https://www.nid.bayern.de/grundwasser/inn/poing-d-83-16268/tabelle"
+    scan_interval: 3600
+    headers:
+      User-Agent: "Mozilla/5.0 (Home Assistant)"
+      Accept: "text/html"
+    sensor:
+      - name: "Grundwasser Poing D83 (m ü. NN)"
+        unique_id: grundwasser_poing_d83_m_u_nn
+        unit_of_measurement: "m"
+        device_class: distance
+        state_class: measurement
+        value_template: >
+          {% set m = value | regex_findall('(?s)([0-9]{2}\\.[0-9]{2}\\.[0-9]{4}).{0,200}?([0-9]{3},[0-9]{2}).{0,200}?([0-9]{1,2},[0-9]{2}).{0,200}?(kein Niedrigwasser|niedrig|Niedrigwasser)') %}
+          {{ (m[0][1] | replace(',', '.') | float) if m|length > 0 else none }}
+
+      - name: "Grundwasser Poing D83 (m u. Gelände)"
+        unique_id: grundwasser_poing_d83_m_u_gelande
+        unit_of_measurement: "m"
+        device_class: distance
+        state_class: measurement
+        value_template: >
+          {% set m = value | regex_findall('(?s)([0-9]{2}\\.[0-9]{2}\\.[0-9]{4}).{0,200}?([0-9]{3},[0-9]{2}).{0,200}?([0-9]{1,2},[0-9]{2}).{0,200}?(kein Niedrigwasser|niedrig|Niedrigwasser)') %}
+          {{ (m[0][2] | replace(',', '.') | float) if m|length > 0 else none }}
+
+      - name: "Grundwasser Poing D83 Situation"
+        unique_id: grundwasser_poing_d83_situation
+        value_template: >
+          {% set m = value | regex_findall('(?s)([0-9]{2}\\.[0-9]{2}\\.[0-9]{4}).{0,200}?([0-9]{3},[0-9]{2}).{0,200}?([0-9]{1,2},[0-9]{2}).{0,200}?(kein Niedrigwasser|niedrig|Niedrigwasser)') %}
+          {{ (m[0][3] | trim) if m|length > 0 else none }}
