@@ -9,8 +9,8 @@ Projekt-Doku für **grundwasser-bundle**. Konvention im HAss-Umfeld: immer **`do
 | [csv-import.md](csv-import.md) | Historische CSV → Recorder |
 | [session-2026-05.md](session-2026-05.md) | Stand der Session (Alias, Deploy, offene Punkte) |
 
-Dashboard-Quellen: `../ui/` enthält Tile, Desktop-Jahresvergleich,
-365-Tage-Verlauf und mobile Swipe-Ansicht. Das Live-Dashboard läuft im
+Dashboard-Quellen: `../ui/` enthält Tile, Jahresvergleich aller Jahre in
+einer Grafik und den 365-Tage-Verlauf. Das Live-Dashboard läuft im
 UI-Storage-Modus; Änderungen aus dem Dashboard-Editor müssen bewusst nach
 `ui/` zurückgeführt werden.
 

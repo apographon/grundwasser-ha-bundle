@@ -85,7 +85,6 @@ Sync legt **keine** Karten im UI-Storage an. Checkliste:
 
 - [ ] ApexCharts-Karte (`ui/apex-grundwasser-card.yaml`)
 - [ ] Verlauf (`ui/apex-grundwasser-verlauf-card.yaml`)
-- [ ] Mobile Swipe-Ansicht (`ui/apex-grundwasser-mobile-swipe-card.yaml`)
 - [ ] Situation-Tile — Entity: `sensor.grundwasser_poing_d83_situation_anzeige`
 
 ---

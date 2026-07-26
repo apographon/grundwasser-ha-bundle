@@ -18,9 +18,8 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 | `integration/grundwasser_helpers.yaml` | Template alias `…_situation_anzeige` for stable UI entity |
 | `scripts/import-grundwasser-csv-to-recorder.py` | Import historical CSV into the recorder |
 | `scripts/deploy-grundwasser.sh` | Deploy integration + helper files to Live-HA (dry-run default) |
-| `ui/apex-grundwasser-card.yaml` | Desktop ApexCharts card: year comparison (Jan–Dec, multiple years) |
+| `ui/apex-grundwasser-card.yaml` | ApexCharts card: all years in one Jan–Dec comparison |
 | `ui/apex-grundwasser-verlauf-card.yaml` | ApexCharts card: rolling 365-day history |
-| `ui/apex-grundwasser-mobile-swipe-card.yaml` | Mobile swipe view: split year comparison |
 | `ui/tile-grundwasser-situation.yaml` | Tile card: situation with color (green/amber/red) |
 | [doc/deploy.md](doc/deploy.md) | Deploy, verify, dashboard checklist |
 | [doc/situation-alias.md](doc/situation-alias.md) | Stable UI alias `…_situation_anzeige` |
@@ -49,7 +48,6 @@ Install these via [HACS](https://hacs.xyz/) (Home Assistant Community Store):
 |--------|---------|
 | **apexcharts-card** | Year comparison chart (ApexCharts) |
 | **card-mod** | Situation tile with state-based colors |
-| **swipe-card** | Mobile swipe view with split year comparison |
 
 After installing, add the frontend resources in **Settings → Dashboards → Resources** (or as prompted by HACS), then reload the dashboard.
 
@@ -85,9 +83,8 @@ Paste the relevant files from `ui/*.yaml` into the **Umwelt & Region** view via
 **Raw configuration**:
 
 - `tile-grundwasser-situation.yaml` — current situation using the stable alias
-- `apex-grundwasser-card.yaml` — desktop year comparison
+- `apex-grundwasser-card.yaml` — all years in one comparison on every screen size
 - `apex-grundwasser-verlauf-card.yaml` — rolling 365-day history
-- `apex-grundwasser-mobile-swipe-card.yaml` — mobile split comparison
 
 ## Situation alias (UI vs REST)
 

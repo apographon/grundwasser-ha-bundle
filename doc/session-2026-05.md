@@ -26,8 +26,8 @@ Kurzprotokoll: was erledigt ist, was deployed wurde, was offen bleibt.
 - Die nur im UI-Storage vorhandenen Karten wurden als versionierte Quellen
   nach `ui/` zurückgeführt:
   - `apex-grundwasser-verlauf-card.yaml`
-  - `apex-grundwasser-mobile-swipe-card.yaml`
-- Der Desktop-Jahresvergleich dokumentiert nun seine Desktop-Visibility.
+- Der Jahresvergleich zeigt wieder alle Jahre in einer Grafik auf allen
+  Bildschirmgrößen; die nicht bedienbare Swipe-Variante wurde entfernt.
 
 ## SSH Mac → HA (Kurz)
 
