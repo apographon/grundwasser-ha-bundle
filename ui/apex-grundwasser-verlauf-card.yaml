@@ -1,0 +1,31 @@
+# ApexCharts: Grundwasser Poing D83 – Verlauf der letzten 365 Tage.
+# Live source: Lovelace → Umwelt & Region → Grundwasser Poing.
+# Paste into Lovelace: Edit Card → Raw configuration. Requires apexcharts-card (HACS).
+---
+type: custom:apexcharts-card
+update_interval: 1min
+header:
+  show: true
+  title: Grundwasser Poing D83 – Verlauf
+graph_span: 365d
+apex_config:
+  chart:
+    height: 320
+  stroke:
+    width: 2
+  dataLabels:
+    enabled: false
+  xaxis:
+    title:
+      text: Datum
+  yaxis:
+    decimalsInFloat: 2
+    title:
+      text: Grundwasserstand (m ü. NN)
+series:
+  - entity: sensor.grundwasser_poing_d83_m_u_nn
+    name: Grundwasserstand
+    type: line
+grid_options:
+  columns: full
+  rows: 6

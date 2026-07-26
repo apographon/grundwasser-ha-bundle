@@ -1,6 +1,6 @@
 # Optional: add CSV here if you don't want to commit the large file
 # grundwasser_poing_historie.csv
-docs/git-push-setup.md
+doc/git-push-setup.md
 *.db
 *.db.bak
 __pycache__/

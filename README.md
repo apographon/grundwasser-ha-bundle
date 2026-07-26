@@ -6,15 +6,28 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 
 **Local setup for Poing.** This bundle is preconfigured for the measuring station **Poing D 83** in Bavaria. If you need data for another city or region, take this code and adapt it: change the NID resource URL in `integration/grundwasser.yaml` to your station’s table page, adjust `unique_id`/entity names, update the import script’s `ENTITY_ID` and CSV source/path if needed, and adapt the dashboard card entities. The NID HTML structure may differ per station—adjust the regex in the templates if your table layout is different.
 
+## Canonical source
+
+**This folder (`grundwasser-bundle/`) is the single source of truth** for the Grundwasser project. The sibling folder `HAss/grundwasser/` is deprecated (redirect only). Copies under `home-assistant-config/` are deployed snapshots — when in doubt, edit here and redeploy.
+
 ## Contents
 
 | Path | Description |
 |------|-------------|
 | `integration/grundwasser.yaml` | REST sensors: level (m ü. NN), level (m u. Gelände), situation |
+| `integration/grundwasser_helpers.yaml` | Template alias `…_situation_anzeige` for stable UI entity |
 | `scripts/import-grundwasser-csv-to-recorder.py` | Import historical CSV into the recorder |
-| `ui/apex-grundwasser-card.yaml` | ApexCharts card: year comparison (Jan–Dec, multiple years) |
+| `scripts/deploy-grundwasser.sh` | Deploy integration + helper files to Live-HA (dry-run default) |
+| `ui/apex-grundwasser-card.yaml` | Desktop ApexCharts card: year comparison (Jan–Dec, multiple years) |
+| `ui/apex-grundwasser-verlauf-card.yaml` | ApexCharts card: rolling 365-day history |
+| `ui/apex-grundwasser-mobile-swipe-card.yaml` | Mobile swipe view: split year comparison |
 | `ui/tile-grundwasser-situation.yaml` | Tile card: situation with color (green/amber/red) |
-| [docs/csv-import.md](docs/csv-import.md) | Import instructions and troubleshooting |
+| [doc/deploy.md](doc/deploy.md) | Deploy, verify, dashboard checklist |
+| [doc/situation-alias.md](doc/situation-alias.md) | Stable UI alias `…_situation_anzeige` |
+| [doc/csv-import.md](doc/csv-import.md) | Import instructions and troubleshooting |
+| [doc/session-2026-05.md](doc/session-2026-05.md) | Session status (deployed, open items, SSH) |
+| [doc/README.md](doc/README.md) | Doc index (`doc/` convention) |
+| [ENTITY-IDS.md](ENTITY-IDS.md) | Live entity IDs (update from Developer Tools → States) |
 | `ui/Home-Assistant-Grundwasser-Visual.png` | Screenshot of the dashboard (sample) |
 
 ## Visualization (sample)
@@ -28,7 +41,7 @@ The chart and situation tile together give a year-over-year view and current sta
 - Home Assistant with **REST** and **Recorder** (SQLite)
 - **Python 3.8+** for the import script (when running outside HA)
 
-### HACS add-ons (required for the dashboard cards)
+### HACS integrations (required for the dashboard cards)
 
 Install these via [HACS](https://hacs.xyz/) (Home Assistant Community Store):
 
@@ -36,28 +49,54 @@ Install these via [HACS](https://hacs.xyz/) (Home Assistant Community Store):
 |--------|---------|
 | **apexcharts-card** | Year comparison chart (ApexCharts) |
 | **card-mod** | Situation tile with state-based colors |
+| **swipe-card** | Mobile swipe view with split year comparison |
 
 After installing, add the frontend resources in **Settings → Dashboards → Resources** (or as prompted by HACS), then reload the dashboard.
 
 ## Quick setup
 
+**Full deploy procedure:** [doc/deploy.md](doc/deploy.md)
+
 ### 1. Data feed (live sensors)
 
-- Copy `integration/grundwasser.yaml` into your HA `config/integrations/` (or include it from `configuration.yaml`).
-- Restart Home Assistant and add the integration (or reload REST).
-- Entities: `sensor.grundwasser_poing_d83_m_u_nn`, `sensor.grundwasser_poing_d83_m_u_gelande`, `sensor.grundwasser_poing_d83_situation` (your instance may show e.g. `sensor.grundwasser_poing_d83_situation_3` – use the ID from **Developer Tools → States** in the tile config).
+```bash
+./scripts/deploy-grundwasser.sh          # dry-run
+./scripts/deploy-grundwasser.sh --run    # copy to Live
+```
+
+Then in the **HA Web Terminal** (not `ssh ha "ha …"`): `ha core check` && `ha core restart`. Details: [doc/deploy.md](doc/deploy.md), SSH: [../home-assistant-config/doc/ssh-from-mac.md](../home-assistant-config/doc/ssh-from-mac.md).
+
+Or copy `integration/grundwasser.yaml` and `integration/grundwasser_helpers.yaml` into HA `config/integrations/` manually. Entity IDs: **[ENTITY-IDS.md](ENTITY-IDS.md)**.
 
 ### 2. Historical data (optional)
 
-- Get the CSV from [NID Bayern](https://www.nid.bayern.de/grundwasser/inn/poing-d-83-16268/tabelle) (export/historical data) and save as `grundwasser_poing_historie.csv`. Format: `Datum;Grundwasserstand [m ü. NN];Prüfstatus` (header in first 8 lines, data from line 9).
-- Copy the CSV and `scripts/import-grundwasser-csv-to-recorder.py` to your HA host (e.g. CSV in `config/www/`, script in `config/`).
-- **Full import procedure** (stop HA, backup DB, dry-run, run import, start HA) is in **[docs/csv-import.md](docs/csv-import.md)**. Use `--force` if the entity already has data and you want to backfill.
-- To keep long history, set `recorder.purge_keep_days` to a large value (e.g. 13514) before importing.
+- Get the CSV from [NID Bayern](https://www.nid.bayern.de/grundwasser/inn/poing-d-83-16268/tabelle) and save as `grundwasser_poing_historie.csv`.
+- **Full import procedure** (stop HA, backup DB, dry-run, run import, start HA): [doc/csv-import.md](doc/csv-import.md).
+- Set `recorder.purge_keep_days` to a large value (e.g. 13514) in Live `configuration.yaml` **before** importing.
 
 ### 3. Dashboard cards
 
-- **Chart (year comparison):** In Lovelace, add a card → **Raw configuration** → paste contents of `ui/apex-grundwasser-card.yaml`. Requires **apexcharts-card**.
-- **Situation tile:** Add a card → **Raw configuration** → paste contents of `ui/tile-grundwasser-situation.yaml`. Adjust the `entity` (and in `card_mod` the `states('...')` call) if your situation sensor has another ID (e.g. `sensor.grundwasser_poing_d83_situation_3`). Requires **card-mod**.
+Lovelace cards are **not** applied by the deploy script because the live dashboard uses
+Home Assistant's **UI Storage mode**. Files under `ui/` are the version-controlled
+source copies; changes made in the HA dashboard editor are not written back to this
+repository automatically.
+
+Paste the relevant files from `ui/*.yaml` into the **Umwelt & Region** view via
+**Raw configuration**:
+
+- `tile-grundwasser-situation.yaml` — current situation using the stable alias
+- `apex-grundwasser-card.yaml` — desktop year comparison
+- `apex-grundwasser-verlauf-card.yaml` — rolling 365-day history
+- `apex-grundwasser-mobile-swipe-card.yaml` — mobile split comparison
+
+## Situation alias (UI vs REST)
+
+| Entity | Role |
+|--------|------|
+| `sensor.grundwasser_poing_d83_situation` (or `_2`, `_3`, …) | REST source from NID — suffix depends on your HA instance |
+| `sensor.grundwasser_poing_d83_situation_anzeige` | **Use in dashboard** — picks active REST source automatically |
+
+Attribute `source_entity` on the alias shows which REST sensor is mirrored.
 
 ## CSV format (for import)
 

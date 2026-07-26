@@ -1,0 +1,39 @@
+# Stable UI alias for Grundwasser situation (Niedrigwasser status).
+# REST entity may get HA suffix (_2, _3) — tile uses sensor.grundwasser_poing_d83_situation_anzeige only.
+# Auto-picks the REST source with a valid state (prefers highest numeric suffix).
+template:
+  - sensor:
+      - name: "Grundwasser Poing D83 Situation Anzeige"
+        unique_id: grundwasser_poing_d83_situation_anzeige
+        icon: mdi:water
+        state: >
+          {% set ns = namespace(val=none, found=false) %}
+          {% for eid in states.sensor
+              | map(attribute='entity_id')
+              | select('match', '^sensor\\.grundwasser_poing_d83_situation(_[0-9]+)?$')
+              | list
+              | sort
+              | reverse %}
+            {% set v = states(eid) %}
+            {% if not ns.found and v not in ['unknown', 'unavailable', 'none', ''] %}
+              {% set ns.val = v %}
+              {% set ns.found = true %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.val }}
+        attributes:
+          source_entity: >
+            {% set ns = namespace(source=none, found=false) %}
+            {% for eid in states.sensor
+                | map(attribute='entity_id')
+                | select('match', '^sensor\\.grundwasser_poing_d83_situation(_[0-9]+)?$')
+                | list
+                | sort
+                | reverse %}
+              {% set v = states(eid) %}
+              {% if not ns.found and v not in ['unknown', 'unavailable', 'none', ''] %}
+                {% set ns.source = eid %}
+                {% set ns.found = true %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.source }}

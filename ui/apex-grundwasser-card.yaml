@@ -1,4 +1,5 @@
-# ApexCharts: Grundwasser Poing D83 – Jahresvergleich (Jan 1 – Dec 31)
+# ApexCharts: Grundwasser Poing D83 – Jahresvergleich (Jan 1 – Dec 31).
+# Desktop card; mobile split view: apex-grundwasser-mobile-swipe-card.yaml.
 # Paste into Lovelace: Edit Card → Raw configuration. Requires apexcharts-card (HACS).
 ---
 type: custom:apexcharts-card
@@ -68,3 +69,9 @@ series:
     stroke_dash: 0
     color: "#ff9800"
     extend_to: false
+grid_options:
+  columns: full
+  rows: 6
+visibility:
+  - condition: screen
+    media_query: "(min-width: 1024px)"

@@ -9,7 +9,7 @@ Usage:
   4. Start Home Assistant: ha core start
 
 Options: --dry-run, --limit N, --force (backfill when entity already has newer data).
-See docs/csv-import.md in this bundle.
+See doc/csv-import.md in this bundle.
 """
 from __future__ import annotations
 
