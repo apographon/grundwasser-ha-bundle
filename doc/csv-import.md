@@ -1,60 +1,67 @@
-# Grundwasser CSV → Recorder Import
+# Grundwasser CSV → Langzeitstatistik
 
-Import historical data from `grundwasser_poing_historie.csv` into the Home Assistant recorder. This setup targets the **Poing D 83** station; for another station, use the same script but set the script’s `ENTITY_ID` and CSV path to match your sensor and CSV file.
+Historische Tagesmittelwerte werden als native Home-Assistant-Langzeitstatistik
+für `sensor.grundwasser_poing_d83_m_u_nn` importiert. Sie bleiben dauerhaft
+erhalten und werden nicht durch `recorder.purge_keep_days` gelöscht.
 
-## Prerequisites
+## Daten und Aufbereitung
 
-- Home Assistant with **SQLite** recorder (default)
-- The level entity must already exist (from the REST integration), e.g. `sensor.grundwasser_poing_d83_m_u_nn`
-- **Python 3.8+** (on the HA host, e.g. via SSH add-on, or on another machine if you copy the DB and CSV there)
-- CSV file: same format as NID Bayern export (`Datum;Grundwasserstand [m ü. NN];Prüfstatus`, data from line 9)
+- Amtlicher GKD-Gesamtexport:
+  `data/raw/gkd-poing-d83-16268-tageswerte-gesamt.zip`
+- Aufbereitung:
+  `scripts/prepare-grundwasser-statistics.py`
+- Statistik-ID:
+  `sensor.grundwasser_poing_d83_m_u_nn`
+- Statistiktyp:
+  Tagesmittel mit `mean`, `min` und `max`
 
-## Where to put files
+Aufbereitung erneut ausführen:
 
-- **Script:** Copy `scripts/import-grundwasser-csv-to-recorder.py` from this bundle to your HA host, e.g. `/config/`.
-- **CSV:** Place the CSV where you can pass its path to the script. Typical: `config/www/grundwasser_poing_historie.csv` so the path is `www/grundwasser_poing_historie.csv` when running from `/config`.
-- **DB:** The script writes to `home-assistant_v2.db` (usually in `/config/` on HA OS).
+```bash
+python3 scripts/prepare-grundwasser-statistics.py \
+  data/raw/gkd-poing-d83-16268-tageswerte-gesamt/grundwasser-gwo \
+  data/statistics-import
+```
 
-## Steps
+Das Script übernimmt amtliche Werte ab 2018 und interpoliert ausschließlich
+Lücken von höchstens sieben Tagen linear. Die Originaldateien bleiben
+unverändert. Die abgeleitete CSV kennzeichnet jeden ergänzten Wert mit
+`interpolated`.
 
-1. **Stop Home Assistant** (required so the DB is not locked):
-   ```bash
-   ha core stop
-   ```
-2. **Backup the database:**
-   ```bash
-   cp /config/home-assistant_v2.db /config/home-assistant_v2.db.bak
-   ```
-3. **Run a dry run** (parse CSV only, no write) to verify:
-   ```bash
-   cd /config
-   python3 import-grundwasser-csv-to-recorder.py www/grundwasser_poing_historie.csv home-assistant_v2.db --dry-run
-   ```
-   You should see a line like “Parsed N rows” and “would import N states”.
-4. **Run the import:**
-   ```bash
-   python3 import-grundwasser-csv-to-recorder.py www/grundwasser_poing_historie.csv home-assistant_v2.db
-   ```
-   If the entity already has newer data and you want to backfill history, add `--force`.
-5. **Start Home Assistant:**
-   ```bash
-   ha core start
-   ```
+## Import
 
-## Options
+Die Dateien `data/statistics-import/import-*.json` sind Payloads für den
+Home-Assistant-WebSocket-Befehl `recorder/import_statistics`. Der Import wird
+über die Home-Assistant-API ausgeführt, nicht durch direkte Änderungen an
+`home-assistant_v2.db`.
 
-| Option | Description |
-|--------|-------------|
-| `--dry-run` | Parse and report only; do not write |
-| `--limit N` | Import only the first N rows |
-| `--force` | Insert all rows even if entity has newer data (backfill) |
+Die Dashboard-Karte verwendet anschließend:
 
-## Recorder purge
+```yaml
+statistics:
+  type: mean
+  period: day
+  align: start
+```
 
-With `purge_keep_days: 90`, older imported data will be purged. To keep full history, set `purge_keep_days: 13514` (or similar) in `configuration.yaml` before importing.
+Der aktuelle REST-Sensor besitzt `state_class: measurement`. Home Assistant
+führt seine Langzeitstatistik daher nach dem historischen Import automatisch
+weiter.
 
-## Troubleshooting
+## Prüfung
 
-- **Entity not found:** Check entity_id in Developer Tools → States; edit `ENTITY_ID` in the script if needed.
-- **Database locked:** Ensure HA is stopped before running the script.
-- **No data after import:** Run with `--dry-run`; check CSV path and format (`YYYY-MM-DD;value;status`).
+Mit `recorder/get_statistics_during_period` beziehungsweise der Statistik-
+Historie müssen für 2018–2026 neun Jahreszeilen vorhanden sein. Der
+GKD-Import vom 26.07.2026 enthält 3.127 Tageswerte ab 2018, davon 15
+transparent gekennzeichnete Interpolationen.
+
+Das vollständige Protokoll des ausgeführten Imports einschließlich Quelle,
+Prüfsumme, Interpolationstagen, HA-Metadaten und Verifikation steht in
+[import-protokoll-2026-07-26.md](import-protokoll-2026-07-26.md).
+
+## Veralteter Recorder-Import
+
+`scripts/import-grundwasser-csv-to-recorder.py` bleibt nur für Altinstallationen
+erhalten. Dieser Weg schreibt Rohzustände direkt in SQLite; sie werden später
+gepurgt und erfordern einen unnötig großen `purge_keep_days`-Wert. Für neue
+Importe nicht mehr verwenden.

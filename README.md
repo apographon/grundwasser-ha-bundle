@@ -6,6 +6,20 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 
 **Local setup for Poing.** This bundle is preconfigured for the measuring station **Poing D 83** in Bavaria. If you need data for another city or region, take this code and adapt it: change the NID resource URL in `integration/grundwasser.yaml` to your station’s table page, adjust `unique_id`/entity names, update the import script’s `ENTITY_ID` and CSV source/path if needed, and adapt the dashboard card entities. The NID HTML structure may differ per station—adjust the regex in the templates if your table layout is different.
 
+## Current status
+
+- Live data is supplied by the NID REST integration.
+- Historical daily values from **2018–2026** are stored in Home Assistant as
+  permanent long-term statistics.
+- The imported series contains **3,127 daily values**, including **15 explicitly
+  marked linear interpolations** for short gaps in the official export.
+- The year-comparison card reads daily statistics and displays all nine years in
+  one chart on desktop and mobile.
+- Recorder raw-history retention can remain small: the year comparison no longer
+  depends on `recorder.purge_keep_days`.
+- Executed import and verification:
+  [doc/import-protokoll-2026-07-26.md](doc/import-protokoll-2026-07-26.md).
+
 ## Canonical source
 
 **This folder (`grundwasser-bundle/`) is the single source of truth** for the Grundwasser project. The sibling folder `HAss/grundwasser/` is deprecated (redirect only). Copies under `home-assistant-config/` are deployed snapshots — when in doubt, edit here and redeploy.
@@ -16,14 +30,17 @@ Data feed, historical CSV import, and dashboard cards for **Grundwasserstand Mes
 |------|-------------|
 | `integration/grundwasser.yaml` | REST sensors: level (m ü. NN), level (m u. Gelände), situation |
 | `integration/grundwasser_helpers.yaml` | Template alias `…_situation_anzeige` for stable UI entity |
-| `scripts/import-grundwasser-csv-to-recorder.py` | Import historical CSV into the recorder |
+| `scripts/prepare-grundwasser-statistics.py` | Prepare GKD data for permanent HA long-term statistics |
+| `scripts/import-grundwasser-csv-to-recorder.py` | Deprecated SQLite raw-state import for legacy installs |
 | `scripts/deploy-grundwasser.sh` | Deploy integration + helper files to Live-HA (dry-run default) |
+| `data/README.md` | Raw-data provenance, checksum, and derived import artifacts |
 | `ui/apex-grundwasser-card.yaml` | ApexCharts card: all years in one Jan–Dec comparison |
 | `ui/apex-grundwasser-verlauf-card.yaml` | ApexCharts card: rolling 365-day history |
 | `ui/tile-grundwasser-situation.yaml` | Tile card: situation with color (green/amber/red) |
 | [doc/deploy.md](doc/deploy.md) | Deploy, verify, dashboard checklist |
 | [doc/situation-alias.md](doc/situation-alias.md) | Stable UI alias `…_situation_anzeige` |
 | [doc/csv-import.md](doc/csv-import.md) | Import instructions and troubleshooting |
+| [doc/import-protokoll-2026-07-26.md](doc/import-protokoll-2026-07-26.md) | Executed import record and verification |
 | [doc/session-2026-05.md](doc/session-2026-05.md) | Session status (deployed, open items, SSH) |
 | [doc/README.md](doc/README.md) | Doc index (`doc/` convention) |
 | [ENTITY-IDS.md](ENTITY-IDS.md) | Live entity IDs (update from Developer Tools → States) |
@@ -37,8 +54,8 @@ The chart and situation tile together give a year-over-year view and current sta
 
 ## Requirements
 
-- Home Assistant with **REST** and **Recorder** (SQLite)
-- **Python 3.8+** for the import script (when running outside HA)
+- Home Assistant with **REST** and **Recorder**
+- **Python 3.8+** to prepare reproducible statistics-import payloads
 
 ### HACS integrations (required for the dashboard cards)
 
@@ -68,9 +85,11 @@ Or copy `integration/grundwasser.yaml` and `integration/grundwasser_helpers.yaml
 
 ### 2. Historical data (optional)
 
-- Get the CSV from [NID Bayern](https://www.nid.bayern.de/grundwasser/inn/poing-d-83-16268/tabelle) and save as `grundwasser_poing_historie.csv`.
-- **Full import procedure** (stop HA, backup DB, dry-run, run import, start HA): [doc/csv-import.md](doc/csv-import.md).
-- Set `recorder.purge_keep_days` to a large value (e.g. 13514) in Live `configuration.yaml` **before** importing.
+- The official GKD export is stored under `data/raw/`.
+- Historical values are imported as native long-term statistics, not recorder
+  raw states. They therefore survive `recorder.purge_keep_days`.
+- Preparation: [doc/csv-import.md](doc/csv-import.md).
+- Completed live import: [doc/import-protokoll-2026-07-26.md](doc/import-protokoll-2026-07-26.md).
 
 ### 3. Dashboard cards
 
@@ -99,7 +118,9 @@ Attribute `source_entity` on the alias shows which REST sensor is mirrored.
 
 - Semicolon-separated; header/metadata in lines 1–8; data from line 9.
 - Data rows: `YYYY-MM-DD;value;status` (value with comma as decimal, e.g. `511,22`).
-- Rows with empty value are skipped (measurement gaps).
+- Original empty values remain untouched in `data/raw/`.
+- The derived statistics file linearly interpolates only closed gaps of at most
+  seven days and labels them `interpolated`; longer gaps remain absent.
 
 ## License
 

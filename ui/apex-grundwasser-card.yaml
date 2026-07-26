@@ -15,6 +15,10 @@ all_series_config:
   opacity: 0.5
   stroke_width: 1
   stroke_dash: 4
+  statistics:
+    type: mean
+    period: day
+    align: start
 apex_config:
   chart:
     height: 320

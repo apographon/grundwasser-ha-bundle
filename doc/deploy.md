@@ -93,7 +93,8 @@ Sync legt **keine** Karten im UI-Storage an. Checkliste:
 
 Nicht Teil von `deploy-grundwasser.sh`. Siehe [csv-import.md](csv-import.md).
 
-Vor Import: `recorder.purge_keep_days` in der Live-`configuration.yaml` ggf. erhöhen.
+Der Import verwendet permanente Langzeitstatistik. `recorder.purge_keep_days`
+muss dafür nicht erhöht werden.
 
 ---
 
@@ -103,6 +104,6 @@ Vor Import: `recorder.purge_keep_days` in der Live-`configuration.yaml` ggf. erh
 |---------|---------|--------|
 | Package `apex-grundwasser-card` failed | UI-YAML in `integrations/` | Nur Packages in `integrations/` |
 | Situation-Tile grau/leer | Alias `unavailable` oder REST tot | `source_entity` / NID prüfen |
-| Chart ohne Historie | `purge_keep_days` zu klein | Vor Import erhöhen |
+| Chart ohne ältere Jahre | Karte liest Recorder-Rohhistorie | Langzeitstatistik importieren und Karte mit `statistics: {type: mean, period: day}` konfigurieren |
 | Deploy schreibt nichts | Volume nicht gemountet | `/Volumes/config` oder `HA_CONFIG_DEST` |
 | `ha …` per SSH: API token | User `hassio` ohne Supervisor-Token | Web-Terminal nutzen |

@@ -6,7 +6,8 @@ Projekt-Doku für **grundwasser-bundle**. Konvention im HAss-Umfeld: immer **`do
 |-------|--------|
 | [deploy.md](deploy.md) | Deploy nach Live, Verifikation, Dashboard-Checkliste |
 | [situation-alias.md](situation-alias.md) | Stabiler UI-Sensor `…_situation_anzeige` vs. REST mit Suffix |
-| [csv-import.md](csv-import.md) | Historische CSV → Recorder |
+| [csv-import.md](csv-import.md) | Historische CSV → permanente Langzeitstatistik |
+| [import-protokoll-2026-07-26.md](import-protokoll-2026-07-26.md) | Quelle, Aufbereitung, Import und HA-Verifikation |
 | [session-2026-05.md](session-2026-05.md) | Stand der Session (Alias, Deploy, offene Punkte) |
 
 Dashboard-Quellen: `../ui/` enthält Tile, Jahresvergleich aller Jahre in
